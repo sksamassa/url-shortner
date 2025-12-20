@@ -168,7 +168,7 @@ export function LinksTable() {
             <DialogDescription>
               Scan or download the QR code for your link.
             </DialogDescription>
-          </Header>
+          </DialogHeader>
           {selectedLink && (
             <div className="flex flex-col items-center gap-4 pt-4">
               <Image
