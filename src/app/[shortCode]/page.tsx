@@ -3,26 +3,28 @@
 
 import { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { mockLinks } from '@/components/dashboard/mock-data';
+import { useLinks } from '@/components/links/links-provider';
 import { Loader2 } from 'lucide-react';
 
 export default function ShortLinkRedirectPage() {
   const params = useParams();
   const router = useRouter();
+  const { links } = useLinks();
   const shortCode = params.shortCode as string;
 
   useEffect(() => {
     if (shortCode) {
-      const link = mockLinks.find((l) => l.shortCode === shortCode);
+      const link = links.find((l) => l.shortCode === shortCode);
       if (link) {
+        // Use replace to avoid adding the redirect page to the browser history
         router.replace(link.originalUrl);
       } else {
-        // Handle case where link is not found, maybe redirect to a 404 page
-        // or the home page. For now, we'll go to the dashboard.
+        // If the link is not found, redirect to the dashboard.
+        // This could be a 404 page in a real application.
         router.replace('/dashboard');
       }
     }
-  }, [shortCode, router]);
+  }, [shortCode, router, links]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen text-center">

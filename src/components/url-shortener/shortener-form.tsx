@@ -30,6 +30,8 @@ import { useToast } from '@/hooks/use-toast';
 import { getLinkCategories } from '@/lib/actions';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '../ui/separator';
+import { useLinks } from '../links/links-provider';
+import NextLink from 'next/link';
 
 const formSchema = z.object({
   longUrl: z.string().url({ message: 'Please enter a valid URL.' }),
@@ -50,6 +52,7 @@ export function ShortenerForm() {
   const [shortenedResult, setShortenedResult] =
     useState<ShortenedResult | null>(null);
   const { toast } = useToast();
+  const { addLink } = useLinks();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -96,6 +99,21 @@ export function ShortenerForm() {
           `https://${shortUrl}`
         )}&size=150x150&qzone=1`;
 
+        const newLink = {
+          id: Math.random().toString(36).substring(2, 9),
+          originalUrl: values.longUrl,
+          shortCode: alias,
+          createdAt: new Date().toISOString(),
+          clicks: 0,
+          analytics: {
+            clicksByDate: [],
+            geo: [],
+            devices: [],
+            referrers: [],
+          },
+        };
+
+        addLink(newLink);
         setShortenedResult({ shortUrl, qrCodeUrl });
 
         toast({
@@ -203,9 +221,13 @@ export function ShortenerForm() {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between p-3 bg-muted rounded-md">
               <Link className="h-5 w-5 text-primary" />
-              <span className="font-code text-primary font-semibold flex-1 mx-4 truncate">
+              <NextLink
+                href={`/${shortenedResult.shortUrl.split('/')[1]}`}
+                target="_blank"
+                className="font-code text-primary font-semibold flex-1 mx-4 truncate hover:underline"
+              >
                 {shortenedResult.shortUrl}
-              </span>
+              </NextLink>
               <Button
                 variant="ghost"
                 size="icon"

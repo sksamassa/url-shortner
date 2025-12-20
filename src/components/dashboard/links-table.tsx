@@ -24,7 +24,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { mockLinks, type LinkData } from './mock-data';
+import { type LinkData } from './mock-data';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -36,9 +36,11 @@ import {
 } from '@/components/ui/dialog';
 import { AnalyticsCharts } from './analytics-charts';
 import Image from 'next/image';
+import { useLinks } from '../links/links-provider';
+import NextLink from 'next/link';
 
 export function LinksTable() {
-  const [links] = useState<LinkData[]>(mockLinks);
+  const { links } = useLinks();
   const [selectedLink, setSelectedLink] = useState<LinkData | null>(null);
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
   const [isQrCodeOpen, setIsQrCodeOpen] = useState(false);
@@ -83,9 +85,13 @@ export function LinksTable() {
             {links.map((link) => (
               <TableRow key={link.id}>
                 <TableCell>
-                  <div className="font-medium text-primary hover:underline cursor-pointer font-code">
+                  <NextLink
+                    href={`/${link.shortCode}`}
+                    target="_blank"
+                    className="font-medium text-primary hover:underline cursor-pointer font-code"
+                  >
                     example.com/{link.shortCode}
-                  </div>
+                  </NextLink>
                 </TableCell>
                 <TableCell className="hidden md:table-cell max-w-sm truncate">
                   <a
@@ -162,7 +168,7 @@ export function LinksTable() {
             <DialogDescription>
               Scan or download the QR code for your link.
             </DialogDescription>
-          </DialogHeader>
+          </Header>
           {selectedLink && (
             <div className="flex flex-col items-center gap-4 pt-4">
               <Image
