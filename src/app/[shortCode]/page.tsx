@@ -1,7 +1,7 @@
 // src/app/[shortCode]/page.tsx
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useLinks } from '@/components/links/links-provider';
 import { Loader2 } from 'lucide-react';
@@ -11,9 +11,12 @@ export default function ShortLinkRedirectPage() {
   const router = useRouter();
   const { links } = useLinks();
   const shortCode = params.shortCode as string;
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (shortCode) {
+    // We need to wait for the links to be loaded from the provider,
+    // especially on the initial client-side render.
+    if (links.length > 0) {
       const link = links.find((l) => l.shortCode === shortCode);
       if (link) {
         // Use replace to avoid adding the redirect page to the browser history
@@ -25,6 +28,16 @@ export default function ShortLinkRedirectPage() {
       }
     }
   }, [shortCode, router, links]);
+  
+  // Set loading to false only if links have loaded and no link was found after the check.
+  useEffect(() => {
+    if (links.length > 0) {
+      const link = links.find((l) => l.shortCode === shortCode);
+      if (!link) {
+        setLoading(false);
+      }
+    }
+  }, [links, shortCode]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen text-center">
