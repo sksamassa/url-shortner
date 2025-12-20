@@ -91,7 +91,7 @@ export function ShortenerForm() {
       setTimeout(() => {
         const alias =
           values.customAlias || Math.random().toString(36).substring(2, 8);
-        const shortUrl = `linkw.se/${alias}`;
+        const shortUrl = `example.com/${alias}`;
         const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(
           `https://${shortUrl}`
         )}&size=150x150&qzone=1`;
@@ -162,7 +162,7 @@ export function ShortenerForm() {
                 <FormLabel>Custom Alias (Optional)</FormLabel>
                 <div className="flex items-center">
                   <span className="inline-flex items-center h-10 px-3 rounded-l-md border border-r-0 bg-muted text-muted-foreground text-sm">
-                    linkw.se/
+                    example.com/
                   </span>
                   <FormControl>
                     <Input

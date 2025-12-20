@@ -84,7 +84,7 @@ export function LinksTable() {
               <TableRow key={link.id}>
                 <TableCell>
                   <div className="font-medium text-primary hover:underline cursor-pointer font-code">
-                    linkw.se/{link.shortCode}
+                    example.com/{link.shortCode}
                   </div>
                 </TableCell>
                 <TableCell className="hidden md:table-cell max-w-sm truncate">
@@ -122,7 +122,7 @@ export function LinksTable() {
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onSelect={() =>
-                          copyToClipboard(`https://linkw.se/${link.shortCode}`)
+                          copyToClipboard(`https://example.com/${link.shortCode}`)
                         }
                       >
                         <Copy className="mr-2 h-4 w-4" /> Copy Link
@@ -143,7 +143,7 @@ export function LinksTable() {
         <DialogContent className="max-w-4xl">
           <DialogHeader>
             <DialogTitle>
-              Analytics for linkw.se/{selectedLink?.shortCode}
+              Analytics for example.com/{selectedLink?.shortCode}
             </DialogTitle>
             <DialogDescription>
               Detailed click-through data for your shortened link.
@@ -157,7 +157,7 @@ export function LinksTable() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
-              QR Code for linkw.se/{selectedLink?.shortCode}
+              QR Code for example.com/{selectedLink?.shortCode}
             </DialogTitle>
             <DialogDescription>
               Scan or download the QR code for your link.
@@ -167,7 +167,7 @@ export function LinksTable() {
             <div className="flex flex-col items-center gap-4 pt-4">
               <Image
                 src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(
-                  `https://linkw.se/${selectedLink.shortCode}`
+                  `https://example.com/${selectedLink.shortCode}`
                 )}&size=250x250&qzone=1`}
                 alt="QR Code for shortened link"
                 width={250}
