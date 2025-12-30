@@ -1,0 +1,309 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
+    margin: 2rem;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.header h1 {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.input-container {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+#url-input {
+    flex-grow: 1;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+#shorten-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+#result {
+    display: none;
+    /* Initially hidden */
+    background-color: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 8px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.short-url-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.short-url {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #007bff;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.copy-button,
+.action-button {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+}
+
+.copy-button span {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.qrcode-container {
+    position: relative;
+    display: inline-block;
+}
+
+#qrcode {
+    border: 1px solid #eee;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.qrcode-popup {
+    display: none;
+    position: absolute;
+    top: -80px; 
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    width: max-content;
+}
+
+.qrcode-container:hover .qrcode-popup {
+    display: block;
+}
+
+.qrcode-popup p {
+    margin: 0 0 0.5rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.qrcode-popup .export-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.qrcode-popup .export-button {
+    background-color: #f0f2f5;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 25px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+    position: relative;
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-header {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.modal-body .form-group {
+    margin-bottom: 1rem;
+}
+
+.modal-body label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.modal-body input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+/* Share modal styles */
+.share-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.share-button {
+    display: inline-block;
+    padding: 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #fff;
+    font-weight: 500;
+    text-align: center;
+    min-width: 100px;
+    transition: transform 0.2s;
+}
+
+.share-button:hover {
+    transform: scale(1.05);
+}
+
+.telegram {
+    background-color: #24A1DE;
+}
+
+.whatsapp {
+    background-color: #25D366;
+}
+
+.vk {
+    background-color: #4C75A3;
+}
+
+.facebook {
+    background-color: #1877F2;
+}
+
+.tiktok {
+    background-color: #000;
+}
+
+.twitter {
+    background-color: #1DA1F2;
+}
+
+.gmail {
+    background-color: #D44638;
+}
+
+@media (max-width: 640px) {
+    .container {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+    .input-container {
+        flex-direction: column;
+    }
+
+    .short-url-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #qrcode {
+        margin-top: 1rem;
+    }
+
+    .modal-content {
+        margin: 20% auto;
+        width: 90%;
+    }
+}

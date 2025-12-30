@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>URL Shortener</h1>
+        </div>
+        <p>
+            Help people find your page on the internet quickly. With a short link,
+            customers won't have to type long URLs that take up a lot of space.
+        </p>
+        <form id="shorten-form" class="input-container">
+            <input type="url" id="url-input" placeholder="https://example.com/very/long/url/to/shorten" required />
+            <button type="submit" id="shorten-button">Shorten</button>
+        </form>
+        <div id="result">
+            <div class="short-url-container">
+                <div>
+                    <a href="" id="shortened-link" class="short-url" target="_blank"></a>
+                    <div class="actions">
+                        <button id="copy-button" class="copy-button">Copy <span>ctrl+c</span></button>
+                        <button id="alias-button" class="action-button">🔗</button>
+                        <button id="share-button" class="action-button">🚀</button>
+                    </div>
+                </div>
+                <div class="qrcode-container">
+                    <div id="qrcode"></div>
+                    <div class="qrcode-popup">
+                        <p>Export the QR-code</p>
+                        <div class="export-buttons">
+                            <button class="export-button" onclick="downloadQrCode('svg')">SVG</button>
+                            <button class="export-button" onclick="downloadQrCode('png')">PNG</button>
+                            <button class="export-button" onclick="downloadQrCode('jpeg')">JPEG</button>
+                            <button id="qr-settings-button-popup" class="action-button">⚙️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alias Modal -->
+    <div id="alias-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-alias-modal">&times;</span>
+            <h2 class="modal-header">Create Custom Alias</h2>
+            <div class="modal-body">
+                <form id="alias-form">
+                    <div class="form-group">
+                        <label for="custom-alias">Custom Alias (optional)</label>
+                        <input type="text" id="custom-alias" placeholder="e.g., my-awesome-link" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Code Settings Modal -->
+    <div id="qr-settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-qr-modal">&times;</span>
+            <h2 class="modal-header">QR Code Settings</h2>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="qr-color">Color</label>
+                    <input type="color" id="qr-color" value="#000000" />
+                </div>
+                <div class="form-group">
+                    <label for="qr-size">Size (px)</label>
+                    <input type="number" id="qr-size" value="128" min="50" max="500" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="apply-qr-settings">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="share-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-share-modal">&times;</span>
+            <h2 class="modal-header">Share your link</h2>
+            <div id="share-buttons" class="share-buttons">
+                <!-- Share buttons will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const shortenForm = document.getElementById("shorten-form");
+        const urlInput = document.getElementById("url-input");
+        const resultDiv = document.getElementById("result");
+        const shortenedLink = document.getElementById("shortened-link");
+        const copyButton = document.getElementById("copy-button");
+        const qrcodeContainer = document.getElementById("qrcode");
+        let currentShortCode = "";
+        let currentOriginalUrl = "";
+        let qrCode;
+
+        // Modal elements
+        const aliasModal = document.getElementById("alias-modal");
+        const qrSettingsModal = document.getElementById("qr-settings-modal");
+        const shareModal = document.getElementById("share-modal");
+
+        // Modal triggers
+        const aliasButton = document.getElementById("alias-button");
+        const shareButton = document.getElementById("share-button");
+        const qrSettingsButtonPopup = document.getElementById("qr-settings-button-popup");
+
+
+        // Close buttons
+        const closeAliasModal = document.getElementById("close-alias-modal");
+        const closeQrModal = document.getElementById("close-qr-modal");
+        const closeShareModal = document.getElementById("close-share-modal");
+
+        // QR Settings
+        const qrColorInput = document.getElementById("qr-color");
+        const qrSizeInput = document.getElementById("qr-size");
+        const applyQrSettings = document.getElementById("apply-qr-settings");
+
+        // Alias Form
+        const aliasForm = document.getElementById("alias-form");
+        const customAliasInput = document.getElementById("custom-alias");
+
+        const generateQrCode = (text, size = 128, color = "#000000") => {
+            qrcodeContainer.innerHTML = "";
+            qrCode = new QRCodeStyling({
+                width: size,
+                height: size,
+                data: text,
+                dotsOptions: {
+                    color: color,
+                    type: "square"
+                },
+                backgroundOptions: {
+                    color: "#ffffff",
+                },
+                qrOptions: {
+                    errorCorrectionLevel: 'H'
+                }
+            });
+            qrCode.append(qrcodeContainer);
+        };
+
+        const displayResult = (shortenedUrl, shortCode) => {
+            const fullUrl = `${window.location.origin}/${shortCode}`;
+            shortenedLink.href = `/${shortCode}`;
+            shortenedLink.textContent = shortenedUrl;
+            resultDiv.style.display = "flex";
+            currentShortCode = shortCode;
+            currentOriginalUrl = urlInput.value;
+
+            generateQrCode(fullUrl);
+
+            copyButton.onclick = () => {
+                navigator.clipboard.writeText(fullUrl).then(() => {
+                    copyButton.textContent = "Copied!";
+                    setTimeout(() => {
+                        copyButton.innerHTML = 'Copy <span>ctrl+c</span>';
+                    }, 2000);
+                });
+            };
+        };
+
+        shortenForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const url = urlInput.value;
+            try {
+                const response = await fetch("/shorten", {
+                    method: "POST",
+                    body: new URLSearchParams({ url }),
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                });
+                const data = await response.json();
+                if (data.shortened_url) {
+                    displayResult(data.shortened_url, data.short_code);
+                } else {
+                    alert(`Error: ${data.error}`);
+                }
+            } catch (error) {
+                console.error("Error shortening URL:", error);
+                alert("An unexpected error occurred. Please try again.");
+            }
+        });
+
+        // Modal handling
+        aliasButton.onclick = () => aliasModal.style.display = "block";
+        qrSettingsButtonPopup.onclick = () => qrSettingsModal.style.display = "block";
+        shareButton.onclick = () => {
+            populateShareButtons();
+            shareModal.style.display = "block";
+        }
+
+        closeAliasModal.onclick = () => aliasModal.style.display = "none";
+        closeQrModal.onclick = () => qrSettingsModal.style.display = "none";
+        closeShareModal.onclick = () => shareModal.style.display = "none";
+
+        window.onclick = (event) => {
+            if (event.target == aliasModal) aliasModal.style.display = "none";
+            if (event.target == qrSettingsModal) qrSettingsModal.style.display = "none";
+            if (event.target == shareModal) shareModal.style.display = "none";
+        };
+
+        // QR Code settings
+        applyQrSettings.onclick = () => {
+            const size = parseInt(qrSizeInput.value, 10);
+            const color = qrColorInput.value;
+            const fullUrl = `${window.location.origin}/${currentShortCode}`;
+            generateQrCode(fullUrl, size, color);
+            qrSettingsModal.style.display = "none";
+        };
+
+        // Custom Alias
+        aliasForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const customAlias = customAliasInput.value;
+            const url = currentOriginalUrl || urlInput.value;
+
+            if (!url) {
+                alert("Please enter a URL first.");
+                return;
+            }
+
+            try {
+                const response = await fetch("/shorten", {
+                    method: "POST",
+                    body: new URLSearchParams({ url, custom_alias: customAlias }),
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                });
+
+                const data = await response.json();
+
+                if (data.shortened_url) {
+                    displayResult(data.shortened_url, data.short_code);
+                    aliasModal.style.display = "none";
+                } else {
+                    alert(`Error: ${data.error}`);
+                }
+            } catch (error) {
+                console.error("Error creating custom alias:", error);
+                alert("An unexpected error occurred. Please try again.");
+            }
+        });
+
+        // Share functionality
+        const populateShareButtons = () => {
+            const shareButtonsContainer = document.getElementById("share-buttons");
+            const url = `${window.location.origin}/${currentShortCode}`;
+            const text = "Check out this shortened URL!";
+
+            const platforms = {
+                Telegram: `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`,
+                WhatsApp: `https://api.whatsapp.com/send?text=${encodeURIComponent(text + " " + url)}`,
+                VK: `http://vk.com/share.php?url=${encodeURIComponent(url)}`,
+                Facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+                TikTok: `https://www.tiktok.com/tag/shorturl?refer=embed`,
+                Twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`,
+                Gmail: `https://mail.google.com/mail/?view=cm&fs=1&su=Shortened URL&body=${encodeURIComponent(text + " " + url)}`
+            };
+
+            shareButtonsContainer.innerHTML = "";
+            for (const [name, link] of Object.entries(platforms)) {
+                const button = document.createElement("a");
+                button.href = link;
+                button.target = "_blank";
+                button.className = `share-button ${name.toLowerCase()}`;
+                button.textContent = name;
+                shareButtonsContainer.appendChild(button);
+            }
+        };
+
+        // QR Code Download
+        const downloadQrCode = (format) => {
+            if (!qrCode) {
+                alert("Could not find QR code data.");
+                return;
+            }
+            qrCode.download({ name: "qrcode", extension: format });
+        };
+
+    </script>
+</body>
+
+</html>
