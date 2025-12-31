@@ -4,3 +4,6 @@ autopep8
 
 # App
 flask
+Flask-SQLAlchemy
+user-agents
+requests

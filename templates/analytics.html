@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analytics for {{ url.short_code }}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: sans-serif; }
+        .container { margin: 2em; }
+        h1, h2 { color: #333; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Analytics for <code>{{ url.short_code }}</code></h1>
+        <p><strong>Original URL:</strong> <a href="{{ url.original_url }}">{{ url.original_url }}</a></p>
+        
+        <h2>Total Clicks: {{ total_clicks }}</h2>
+
+        <h2>Clicks by Date</h2>
+        <canvas id="clicksChart" width="400" height="200"></canvas>
+
+        <h2>Clicks Log</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>IP Address</th>
+                    <th>Country</th>
+                    <th>City</th>
+                    <th>Device Type</th>
+                    <th>OS</th>
+                    <th>Browser</th>
+                    <th>Referrer</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for click in clicks_log %}
+                <tr>
+                    <td>{{ click.timestamp }}</td>
+                    <td>{{ click.ip_address }}</td>
+                    <td>{{ click.country }}</td>
+                    <td>{{ click.city }}</td>
+                    <td>{{ click.device_type }}</td>
+                    <td>{{ click.os }}</td>
+                    <td>{{ click.browser }}</td>
+                    <td>{{ click.referrer }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        var ctx = document.getElementById('clicksChart').getContext('2d');
+        var clicksChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ clicks_by_date.keys() | list | tojson }},
+                datasets: [{
+                    label: '# of Clicks',
+                    data: {{ clicks_by_date.values() | list | tojson }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

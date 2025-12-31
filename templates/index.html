@@ -30,6 +30,7 @@
                         <button id="copy-button" class="copy-button">Copy <span>ctrl+c</span></button>
                         <button id="alias-button" class="action-button">🔗</button>
                         <button id="share-button" class="action-button">🚀</button>
+                        <a href="#" id="analytics-button" class="action-button" target="_blank">📊</a>
                     </div>
                 </div>
                 <div class="qrcode-container">
@@ -106,6 +107,7 @@
         const shortenedLink = document.getElementById("shortened-link");
         const copyButton = document.getElementById("copy-button");
         const qrcodeContainer = document.getElementById("qrcode");
+        const analyticsButton = document.getElementById("analytics-button");
         let currentShortCode = "";
         let currentOriginalUrl = "";
         let qrCode;
@@ -155,18 +157,23 @@
             qrCode.append(qrcodeContainer);
         };
 
-        const displayResult = (shortenedUrl, shortCode) => {
-            const fullUrl = `${window.location.origin}/${shortCode}`;
-            shortenedLink.href = `/${shortCode}`;
-            shortenedLink.textContent = shortenedUrl;
+        const displayResult = (shortCode) => {
+            const baseUrl = window.location.origin;
+            const shortUrl = `${baseUrl}/sksam/${shortCode}`;
+            const analyticsUrl = `${baseUrl}/analytics/${shortCode}`;
+            const displayUrl = `sksam/${shortCode}`;
+
+            shortenedLink.href = shortUrl;
+            shortenedLink.textContent = displayUrl;
+            analyticsButton.href = analyticsUrl;
             resultDiv.style.display = "flex";
             currentShortCode = shortCode;
             currentOriginalUrl = urlInput.value;
 
-            generateQrCode(fullUrl);
+            generateQrCode(shortUrl);
 
             copyButton.onclick = () => {
-                navigator.clipboard.writeText(fullUrl).then(() => {
+                navigator.clipboard.writeText(shortUrl).then(() => {
                     copyButton.textContent = "Copied!";
                     setTimeout(() => {
                         copyButton.innerHTML = 'Copy <span>ctrl+c</span>';
@@ -174,6 +181,18 @@
                 });
             };
         };
+
+        const handleShortenResponse = async (response) => {
+            const data = await response.json();
+            if (data.short_code) {
+                displayResult(data.short_code);
+                return true;
+            } else {
+                alert(`Error: ${data.error}`);
+                return false;
+            }
+        };
+
 
         shortenForm.addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -186,12 +205,7 @@
                         "Content-Type": "application/x-www-form-urlencoded",
                     },
                 });
-                const data = await response.json();
-                if (data.shortened_url) {
-                    displayResult(data.shortened_url, data.short_code);
-                } else {
-                    alert(`Error: ${data.error}`);
-                }
+                await handleShortenResponse(response);
             } catch (error) {
                 console.error("Error shortening URL:", error);
                 alert("An unexpected error occurred. Please try again.");
@@ -220,8 +234,8 @@
         applyQrSettings.onclick = () => {
             const size = parseInt(qrSizeInput.value, 10);
             const color = qrColorInput.value;
-            const fullUrl = `${window.location.origin}/${currentShortCode}`;
-            generateQrCode(fullUrl, size, color);
+            const shortUrl = `${window.location.origin}/sksam/${currentShortCode}`;
+            generateQrCode(shortUrl, size, color);
             qrSettingsModal.style.display = "none";
         };
 
@@ -245,14 +259,10 @@
                     },
                 });
 
-                const data = await response.json();
-
-                if (data.shortened_url) {
-                    displayResult(data.shortened_url, data.short_code);
+                if (await handleShortenResponse(response)) {
                     aliasModal.style.display = "none";
-                } else {
-                    alert(`Error: ${data.error}`);
                 }
+
             } catch (error) {
                 console.error("Error creating custom alias:", error);
                 alert("An unexpected error occurred. Please try again.");
@@ -262,7 +272,7 @@
         // Share functionality
         const populateShareButtons = () => {
             const shareButtonsContainer = document.getElementById("share-buttons");
-            const url = `${window.location.origin}/${currentShortCode}`;
+            const url = `${window.location.origin}/sksam/${currentShortCode}`;
             const text = "Check out this shortened URL!";
 
             const platforms = {
