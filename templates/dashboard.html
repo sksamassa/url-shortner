@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <h2>My URLs</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Original URL</th>
+                <th>Short Link</th>
+                <th>Analytics</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if urls %}
+                {% for url in urls %}
+                    <tr>
+                        <td>{{ url.original_url }}</td>
+                        <td><a href="{{ url_for('redirect_to_url', short_code=url.short_code, _external=True) }}">{{ url.short_code }}</a></td>
+                        <td><a href="{{ url_for('view_analytics', short_code=url.short_code) }}">View</a></td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="3">You haven't shortened any URLs yet.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+{% endblock %}

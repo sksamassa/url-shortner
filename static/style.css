@@ -11,299 +11,252 @@ body {
 .container {
     background-color: #fff;
     padding: 2rem;
-    border-radius: 8px;
+    border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
+    max-width: 900px;
     width: 100%;
     margin: 2rem;
 }
 
-.header {
+.qr-generator-container {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 4rem;
+    align-items: flex-start;
+}
+
+.qr-config {
+    max-width: 450px;
+}
+
+.qr-header {
     display: flex;
     align-items: center;
     gap: 1rem;
     margin-bottom: 1rem;
 }
 
-.header h1 {
-    font-size: 1.5rem;
+.qr-header h1 {
+    font-size: 2rem;
     font-weight: 500;
 }
 
-.input-container {
+.qr-config p {
+    color: #666;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.qr-url-input {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    box-sizing: border-box;
+}
+
+.advanced-settings-link {
+    color: #000;
+    text-decoration: none;
+    border-bottom: 1px dotted #000;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.advanced-settings-container {
+    margin-top: 1.5rem;
+}
+
+.advanced-settings-header {
     display: flex;
-    gap: 1rem;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.advanced-settings-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+#hide-advanced-settings {
+    color: #888;
+    text-decoration: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.tabs {
+    display: flex;
+    background-color: #f0f2f5;
+    border-radius: 10px;
+    padding: 4px;
     margin-bottom: 1.5rem;
 }
 
-#url-input {
-    flex-grow: 1;
-    padding: 0.75rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1rem;
-}
-
-#shorten-button {
-    background-color: #007bff;
-    color: #fff;
+.tab-button {
+    flex: 1;
+    padding: 0.6rem;
     border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-}
-
-#result {
-    display: none;
-    /* Initially hidden */
-    background-color: #f9f9f9;
-    padding: 1.5rem;
+    background-color: transparent;
     border-radius: 8px;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.short-url-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-}
-
-.short-url {
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: #007bff;
-    text-decoration: none;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-}
-
-.actions {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    flex-wrap: wrap;
-}
-
-.copy-button,
-.action-button {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    padding: 0.5rem 1rem;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #333;
+    transition: background-color 0.2s, color 0.2s;
 }
 
-.copy-button span {
+.tab-button.active {
+    background-color: #fff;
+    color: #000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.image-uploader {
+    border: 2px dashed #e0e0e0;
+    border-radius: 12px;
+    padding: 2.5rem;
+    text-align: center;
+    background-color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+.image-uploader p {
+    margin: 0;
     color: #888;
     font-size: 0.9rem;
 }
 
-.qrcode-container {
-    position: relative;
-    display: inline-block;
+.upload-label {
+    background-color: #f0f2f5;
+    padding: 0.4rem 0.9rem;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #333;
+    margin-left: 0.5rem;
 }
 
-#qrcode {
-    border: 1px solid #eee;
-    padding: 10px;
+.uploader-caption {
+    font-size: 0.8rem;
+    color: #aaa;
+    text-align: center;
+}
+
+.color-settings {
+    display: flex;
+    gap: 2rem;
+}
+
+.color-input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.color-input-group label {
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: 0.75rem;
+}
+
+.color-picker-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+}
+
+.color-picker-container input[type="color"] {
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    padding: 0;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.color-picker-container input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.color-picker-container input[type="color"]::-webkit-color-swatch {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+}
+
+.color-picker-container span {
+    font-family: monospace;
+    font-size: 1rem;
+    color: #333;
+}
+
+.qr-preview {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.qrcode-popup {
-    display: none;
-    position: absolute;
-    top: -80px; 
-    left: 50%;
-    transform: translateX(-50%);
+.qr-code-display {
     background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 8px;
     padding: 1rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 10;
-    width: max-content;
-}
-
-.qrcode-container:hover .qrcode-popup {
-    display: block;
-}
-
-.qrcode-popup p {
-    margin: 0 0 0.5rem;
-    font-weight: 500;
-    font-size: 0.9rem;
-}
-
-.qrcode-popup .export-buttons {
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    width: 256px;
+    height: 256px;
     display: flex;
-    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
 }
 
-.qrcode-popup .export-button {
-    background-color: #f0f2f5;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-
-
-/* Modal styles */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
+#qr-code-placeholder {
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-image: url("data:image/svg+xml,%3Csvg width='256' height='256' viewBox='0 0 256 256' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='256' height='256' rx='16' fill='white'/%3E%3Crect x='40' y='40' width='64' height='64' rx='8' fill='%23f0f2f5'/%3E%3Crect x='152' y='40' width='64' height='64' rx='8' fill='%23f0f2f5'/%3E%3Crect x='40' y='152' width='64' height='64' rx='8' fill='%23f0f2f5'/%3E%3Crect x='120' y='120' width='16' height='16' rx='4' fill='%23f0f2f5'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
-.modal-content {
-    background-color: #fefefe;
-    margin: 10% auto;
-    padding: 25px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 500px;
+#qr-code-canvas {
+    display: none;
+}
+
+.export-buttons {
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.export-button {
+    background-color: #f0f2f5;
+    border: none;
     border-radius: 8px;
-    position: relative;
-}
-
-.close-button {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    position: absolute;
-    top: 10px;
-    right: 20px;
-}
-
-.close-button:hover,
-.close-button:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.modal-header {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.modal-body .form-group {
-    margin-bottom: 1rem;
-}
-
-.modal-body label {
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-.modal-body input {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin-top: 1.5rem;
-}
-
-/* Share modal styles */
-.share-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-}
-
-.share-button {
-    display: inline-block;
-    padding: 1rem;
-    border-radius: 8px;
-    text-decoration: none;
-    color: #fff;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
     font-weight: 500;
-    text-align: center;
-    min-width: 100px;
-    transition: transform 0.2s;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
-.share-button:hover {
-    transform: scale(1.05);
+.export-button:hover {
+    background-color: #e2e6ea;
 }
 
-.telegram {
-    background-color: #24A1DE;
-}
-
-.whatsapp {
-    background-color: #25D366;
-}
-
-.vk {
-    background-color: #4C75A3;
-}
-
-.facebook {
-    background-color: #1877F2;
-}
-
-.tiktok {
-    background-color: #000;
-}
-
-.twitter {
-    background-color: #1DA1F2;
-}
-
-.gmail {
-    background-color: #D44638;
-}
-
-@media (max-width: 640px) {
-    .container {
-        padding: 1.5rem;
-        margin: 1rem;
-    }
-
-    .input-container {
-        flex-direction: column;
-    }
-
-    .short-url-container {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    #qrcode {
-        margin-top: 1rem;
-    }
-
-    .modal-content {
-        margin: 20% auto;
-        width: 90%;
-    }
+.form-group {
+    margin-bottom: 1rem;
 }

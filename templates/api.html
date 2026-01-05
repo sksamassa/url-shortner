@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>API Documentation</h1>
+        <p>Our API allows you to programmatically shorten URLs. Below you'll find the details of how to use our single endpoint.</p>
+
+        <h2>Endpoint: <code>/shorten</code></h2>
+        <ul>
+            <li><strong>HTTP Method:</strong> POST</li>
+            <li><strong>Content-Type:</strong> <code>application/x-www-form-urlencoded</code></li>
+        </ul>
+
+        <h2>Parameters</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Required</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>url</code></td>
+                    <td>String</td>
+                    <td>The original URL you want to shorten.</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td><code>custom_alias</code></td>
+                    <td>String</td>
+                    <td>A custom short code for the URL. If not provided, a random one will be generated.</td>
+                    <td>No</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Success Response</h2>
+        <p>On success, the API will return a JSON object with the short code.</p>
+        <pre><code>{
+    "short_code": "your_short_code"
+}</code></pre>
+
+        <h2>Error Response</h2>
+        <p>If something goes wrong, the API will return a JSON object with an error message.</p>
+        <pre><code>{
+    "error": "Error message describing the issue"
+}</code></pre>
+
+        <h2>Example Usage</h2>
+        <p>Here's an example of how to shorten a URL using <code>curl</code>:</p>
+        <pre><code>curl -X POST \
+  {{ request.url_root }}shorten \
+  -d 'url=https://example.com/my-very-long-url-to-shorten'</code></pre>
+        <p>To use a custom alias:</p>
+        <pre><code>curl -X POST \
+  {{ request.url_root }}shorten \
+  -d 'url=https://example.com/another-long-url&custom_alias=my-link'</code></pre>
+    </div>
+</body>
+</html>

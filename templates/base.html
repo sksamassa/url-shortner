@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}URL Shortener{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <h1><a href="{{ url_for('index') }}" class="logo">URL Shortener</a></h1>
+            <nav class="auth-links">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}">Login</a>
+                    <a href="{{ url_for('register') }}">Register</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-links">
+                <a href="#">Service Rules</a>
+                <a href="#">API</a>
+                <a href="#">QR-Generator</a>
+            </div>
+            <p class="copyright">&copy; 2024 URL Shortener. All Rights Reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

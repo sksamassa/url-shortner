@@ -160,6 +160,15 @@ def view_analytics(short_code):
         clicks_log=url.clicks
     )
 
+@app.route('/api')
+def api():
+    return render_template('api.html')
+
+
+@app.route('/qr-generator')
+def qr_generator():
+    return render_template('qr_generator.html')
+
 
 # --- Main Execution ---
 

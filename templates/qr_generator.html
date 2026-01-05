@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="qr-generator-container">
+            <div class="qr-config">
+                <div class="qr-header">
+                    <h1>QR Generator</h1>
+                </div>
+                <p>Help customers find your page on the internet quickly. With a QR code, customers won't have to manually type a link. Just scan the QR code.</p>
+
+                <input type="text" id="qr-url-input" class="qr-url-input" placeholder="Enter link to generate QR code">
+
+                <a href="#" class="advanced-settings-link" id="advanced-settings-toggle">Advanced settings</a>
+                
+                <div class="advanced-settings-container" id="advanced-settings" style="display: none;">
+                    <div class="advanced-settings-header">
+                        <h3>Advanced settings</h3>
+                        <a href="#" id="hide-advanced-settings">Hide</a>
+                    </div>
+                    <div class="tabs">
+                        <button class="tab-button active" data-tab="icon-tab">Icon</button>
+                        <button class="tab-button" data-tab="colors-tab">Colors</button>
+                    </div>
+                    <div id="icon-tab" class="tab-content active">
+                        <div id="image-uploader" class="image-uploader">
+                            <p>Drag & drop a file or <label for="image-upload" class="upload-label">upload from device</label></p>
+                            <input type="file" id="image-upload" accept="image/png, image/jpeg, image/gif, image/svg+xml" style="display: none;">
+                        </div>
+                        <p class="uploader-caption">Resolution from 150×150 px, size up to 4 MB, in JPG, PNG, GIF or SVG</p>
+                    </div>
+                    <div id="colors-tab" class="tab-content">
+                        <div class="color-settings">
+                            <div class="color-input-group">
+                                <label for="qr-color">Code color</label>
+                                <div class="color-picker-container">
+                                    <input type="color" id="qr-color" value="#000000">
+                                    <span id="qr-color-hex">000000</span>
+                                </div>
+                            </div>
+                            <div class="color-input-group">
+                                <label for="bg-color">Background color</label>
+                                <div class="color-picker-container">
+                                    <input type="color" id="bg-color" value="#ffffff">
+                                    <span id="bg-color-hex">FFFFFF</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                 <div id="export-buttons" class="export-buttons" style="margin-top: 1.5rem; display:none;">
+                    <button class="export-button" onclick="downloadQrCode('svg')">SVG</button>
+                    <button class="export-button" onclick="downloadQrCode('png')">PNG</button>
+                    <button class="export-button" onclick="downloadQrCode('jpeg')">JPEG</button>
+                </div>
+            </div>
+            <div class="qr-preview">
+                <div class="qr-code-display">
+                    <div id="qr-code-placeholder"></div>
+                    <div id="qr-code-canvas"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const qrUrlInput = document.getElementById("qr-url-input");
+        const qrCodeCanvas = document.getElementById("qr-code-canvas");
+        const qrCodePlaceholder = document.getElementById("qr-code-placeholder");
+        const advancedSettingsToggle = document.getElementById("advanced-settings-toggle");
+        const advancedSettings = document.getElementById("advanced-settings");
+        const hideAdvancedSettings = document.getElementById("hide-advanced-settings");
+        const qrColorInput = document.getElementById("qr-color");
+        const bgColorInput = document.getElementById("bg-color");
+        const qrColorHex = document.getElementById("qr-color-hex");
+        const bgColorHex = document.getElementById("bg-color-hex");
+        const exportButtons = document.getElementById("export-buttons");
+        const tabs = document.querySelectorAll(".tab-button");
+        const tabContents = document.querySelectorAll(".tab-content");
+        const imageUploader = document.getElementById("image-uploader");
+        const imageUpload = document.getElementById("image-upload");
+
+        let qrCode;
+        let qrImage = null;
+
+        const generateQrCode = (url, size, color, bgColor, image) => {
+            qrCodeCanvas.innerHTML = "";
+            if (url) {
+                qrCodePlaceholder.style.display = "none";
+                qrCodeCanvas.style.display = "block";
+                exportButtons.style.display = "flex";
+                advancedSettingsToggle.style.display = "inline";
+
+                const options = {
+                    width: size,
+                    height: size,
+                    data: url,
+                    dotsOptions: { color: color, type: "square" },
+                    backgroundOptions: { color: bgColor },
+                    qrOptions: { errorCorrectionLevel: 'H' }
+                };
+
+                if (image) {
+                    options.image = image;
+                    options.imageOptions = { imageSize: 0.4, margin: 5 };
+                }
+
+                qrCode = new QRCodeStyling(options);
+                qrCode.append(qrCodeCanvas);
+            } else {
+                qrCodePlaceholder.style.display = "block";
+                qrCodeCanvas.style.display = "none";
+                exportButtons.style.display = "none";
+                advancedSettingsToggle.style.display = "none";
+                advancedSettings.style.display = "none";
+                qrImage = null; // Reset image on URL clear
+            }
+        };
+
+        const updateQrCode = () => {
+            generateQrCode(qrUrlInput.value, 224, qrColorInput.value, bgColorInput.value, qrImage);
+        };
+
+        qrUrlInput.addEventListener("input", updateQrCode);
+        qrColorInput.addEventListener("input", () => {
+            qrColorHex.textContent = qrColorInput.value.substring(1).toUpperCase();
+            updateQrCode();
+        });
+        bgColorInput.addEventListener("input", () => {
+            bgColorHex.textContent = bgColorInput.value.substring(1).toUpperCase();
+            updateQrCode();
+        });
+
+        advancedSettingsToggle.addEventListener("click", (e) => {
+            e.preventDefault();
+            advancedSettings.style.display = "block";
+            advancedSettingsToggle.style.display = "none";
+        });
+
+        hideAdvancedSettings.addEventListener("click", (e) => {
+            e.preventDefault();
+            advancedSettings.style.display = "none";
+            advancedSettingsToggle.style.display = "inline";
+        });
+
+        tabs.forEach(tab => {
+            tab.addEventListener("click", () => {
+                tabs.forEach(t => t.classList.remove("active"));
+                tab.classList.add("active");
+                tabContents.forEach(c => c.classList.remove("active"));
+                document.getElementById(tab.dataset.tab).classList.add("active");
+            });
+        });
+
+        const handleImage = (file) => {
+            if (file && file.type.startsWith("image/")) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    qrImage = e.target.result;
+                    updateQrCode();
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        imageUploader.addEventListener("dragover", (e) => e.preventDefault());
+        imageUploader.addEventListener("drop", (e) => {
+            e.preventDefault();
+            handleImage(e.dataTransfer.files[0]);
+        });
+        imageUpload.addEventListener("change", (e) => handleImage(e.target.files[0]));
+        
+        const downloadQrCode = (format) => {
+            if (qrCode && qrUrlInput.value) {
+                qrCode.download({ name: "qrcode", extension: format });
+            } else {
+                alert("Please enter a URL to generate a QR code.");
+            }
+        };
+
+        // Initial state
+        generateQrCode(null);
+    </script>
+</body>
+</html>
