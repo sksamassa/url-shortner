@@ -11,16 +11,22 @@ from user_agents import parse
 
 # --- App and Database Configuration ---
 
-# Initialize Flask App using instance_relative_config.
-# This tells the app to look for configuration and the database
-# in a special "instance" folder, which is ideal for this purpose.
-app = Flask(__name__, template_folder='templates', static_folder='static', instance_relative_config=True)
+app = Flask(__name__, template_folder='templates', static_folder='static')
 
-# Configure the database URI to be stored in the instance folder.
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shortener.db'
+# Check if running in Vercel
+if os.environ.get('VERCEL'):
+    # In Vercel, the filesystem is read-only, except for /tmp
+    db_path = os.path.join('/tmp', 'shortener.db')
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+else:
+    # Locally, use an instance folder
+    instance_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'instance')
+    if not os.path.exists(instance_path):
+        os.makedirs(instance_path)
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(instance_path, "shortener.db")}'
+
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Ensure the instance folder exists. Flask will not create it automatically.
 db = SQLAlchemy(app)
 
 
@@ -57,11 +63,6 @@ class Click(db.Model):
 
 # Use app.app_context() to ensure the app is fully configured.
 with app.app_context():
-    # We must make sure the instance path exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
     db.create_all()
 
 
