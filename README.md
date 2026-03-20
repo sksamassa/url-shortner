@@ -1,4 +1,3 @@
-```markdown
 # URL Shortener with Advanced Analytics
 
 A production-ready URL shortening service with click analytics, QR code generation, and a REST API. Designed for efficient link management and campaign tracking.
@@ -31,7 +30,6 @@ A production-ready URL shortening service with click analytics, QR code generati
    ```bash
    git clone https://github.com/your-username/url-shortener.git
    cd url-shortener
-   ```
 
 2. **Create a virtual environment and activate it**
    ```bash
@@ -112,4 +110,3 @@ This project is developed for OOO «Айти Технологии» as part of a
 
 **Live Demo**: [too-short.vercel.app](https://too-short.vercel.app)  
 **Documentation**: See `/api` endpoint for API docs, and `/qr-generator` for the standalone QR code tool.
-```
