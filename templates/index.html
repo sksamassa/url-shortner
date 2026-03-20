@@ -140,6 +140,26 @@
         const settingsTabs = document.querySelectorAll("#settings-modal .tab-button");
         const settingsTabContents = document.querySelectorAll("#settings-modal .tab-content");
 
+        // --- Helper functions for localStorage ---
+        function saveShortenedState(shortCode, originalUrl) {
+            localStorage.setItem('lastShortCode', shortCode);
+            localStorage.setItem('lastOriginalUrl', originalUrl);
+        }
+
+        function loadSavedState() {
+            const savedShortCode = localStorage.getItem('lastShortCode');
+            const savedOriginalUrl = localStorage.getItem('lastOriginalUrl');
+            if (savedShortCode && savedOriginalUrl) {
+                // Re-populate the input field with the original URL
+                urlInput.value = savedOriginalUrl;
+                // Display the result
+                displayResult(savedShortCode);
+                // Ensure currentOriginalUrl and currentShortCode are set
+                currentOriginalUrl = savedOriginalUrl;
+                currentShortCode = savedShortCode;
+            }
+        }
+
         const generateQrCode = (text, size = 128, color = "#000000") => {
             qrcodeCanvas.innerHTML = "";
             qrCode = new QRCodeStyling({
@@ -173,6 +193,9 @@
             currentShortCode = shortCode;
             currentOriginalUrl = urlInput.value;
 
+            // Save to localStorage
+            saveShortenedState(shortCode, urlInput.value);
+
             generateQrCode(shortUrl, qrSizeInput.value, qrColorInput.value);
 
             copyButton.onclick = () => {
@@ -195,7 +218,6 @@
                 return false;
             }
         };
-
 
         shortenForm.addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -342,6 +364,8 @@
             qrCode.download({ name: "qrcode", extension: format });
         };
 
+        // Restore saved state when page loads
+        window.addEventListener('DOMContentLoaded', loadSavedState);
     </script>
 </body>
 

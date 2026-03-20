@@ -85,6 +85,13 @@ def shorten_url():
     if not original_url:
         return jsonify({"error": "URL is required"}), 400
 
+    # Check if this original URL already exists
+    existing_url = Url.query.filter_by(original_url=original_url).first()
+    if existing_url:
+        # Deduplication: return the existing short code
+        return jsonify({"short_code": existing_url.short_code})
+
+    # URL is new; proceed with creation
     custom_alias = request.form.get("custom_alias")
     if custom_alias:
         if Url.query.filter_by(short_code=custom_alias).first():
@@ -97,7 +104,6 @@ def shorten_url():
     db.session.add(new_url)
     db.session.commit()
 
-    # Return only the short_code. The client will construct the full URLs.
     return jsonify({"short_code": short_code})
 
 
