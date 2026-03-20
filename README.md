@@ -1,5 +1,3 @@
-Here's a rewritten `README.md` that accurately reflects the project's purpose, features, and setup instructions.
-
 ```markdown
 # URL Shortener with Advanced Analytics
 
